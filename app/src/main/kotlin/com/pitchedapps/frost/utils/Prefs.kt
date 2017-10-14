@@ -11,6 +11,7 @@ import com.pitchedapps.frost.enums.FeedSort
 import com.pitchedapps.frost.enums.MainActivityLayout
 import com.pitchedapps.frost.enums.Theme
 import com.pitchedapps.frost.injectors.InjectorContract
+import java.util.*
 
 /**
  * Created by Allan Wang on 2017-05-28.
@@ -25,7 +26,9 @@ object Prefs : KPref() {
 
     var prevId: Long by kpref("prev_id", -1L)
 
-    var theme: Int by kpref("theme", 0, postSetter = { _: Int -> loader.invalidate() })
+    var theme: Int by kpref("theme", 0, postSetter = { _: Int -> themeLoader.invalidate() })
+
+    var nightTheme: Int by kpref("night_theme", Theme.AMOLED.ordinal, postSetter = { _: Int -> themeLoader.invalidate() })
 
     var customTextColor: Int by kpref("color_text", 0xffeceff1.toInt())
 
@@ -47,9 +50,36 @@ object Prefs : KPref() {
 
     var identifier: Int by kpref("identifier", -1)
 
-    private val loader = lazyResettable { Theme.values[Prefs.theme] }
+    var enableNightTheme: Boolean by kpref("enable_night_theme", false)
 
-    private val t: Theme by loader
+    var nightThemeStart: Int by kpref("night_theme_start", 800)
+
+    var nightThemeEnd: Int by kpref("night_theme_end", 2000)
+
+    val themeLoader = lazyResettable { Theme(if (shouldUseNightTheme) nightTheme else theme) }
+
+    private val shouldUseNightTheme: Boolean
+        get() {
+            if (!enableNightTheme) return false
+            val cal = Calendar.getInstance()
+            val time = cal.get(Calendar.HOUR_OF_DAY) * 100 + cal.get(Calendar.MINUTE)
+            return nightThemeStart < time || time < nightThemeEnd
+        }
+
+    private var usingNightTheme: Boolean? = null
+
+    /**
+     * Returns true if the theme style has changed (based on night toggle)
+     */
+    val updateTheme: Boolean
+        get() {
+            val nightTheme = shouldUseNightTheme
+            if (usingNightTheme == nightTheme) return false
+            usingNightTheme = nightTheme
+            return true
+        }
+
+    private val t: Theme by themeLoader
 
     val textColor: Int
         get() = t.textColor

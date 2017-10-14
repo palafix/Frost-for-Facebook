@@ -23,4 +23,11 @@
     <string name="web_text_scaling">Web Text Scaling</string>
     <string name="web_text_scaling_desc">Text Scaling Example; Long press the percentage text to reset.</string>
 
+    <!--Night Theme-->
+    <string name="night_theme">Night Theme</string>
+    <string name="night_theme_desc">Automatic theme switch</string>
+    <string name="enable_night_theme">Enable Night Theme</string>
+    <string name="enable_night_theme_desc">Allow automatic switch to night theme within selected time</string>
+    <string name="night_theme_start">Night Theme Start Time</string>
+    <string name="night_theme_end">Night Theme End Time</string>
 </resources>

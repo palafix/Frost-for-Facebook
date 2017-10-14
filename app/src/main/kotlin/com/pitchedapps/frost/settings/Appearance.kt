@@ -23,28 +23,25 @@ fun SettingsActivity.getAppearancePrefs(): KPrefAdapterBuilder.() -> Unit = {
     header(R.string.theme_customization)
 
     text(R.string.theme, { Prefs.theme }, { Prefs.theme = it }) {
-        onClick = {
-            _, _, item ->
+        onClick = { _, _, item ->
             materialDialogThemed {
                 title(R.string.theme)
                 items(Theme.values()
                         .map { if (it == Theme.CUSTOM && !IS_FROST_PRO) R.string.custom_pro else it.textRes }
                         .map { string(it) })
-                itemsCallbackSingleChoice(item.pref) {
-                    _, _, which, _ ->
-                    if (item.pref != which) {
-                        if (which == Theme.CUSTOM.ordinal && !IS_FROST_PRO) {
-                            purchasePro()
-                            return@itemsCallbackSingleChoice true
-                        }
-                        item.pref = which
-                        shouldRestartMain()
-                        reload()
-                        setFrostTheme(true)
-                        themeExterior()
-                        invalidateOptionsMenu()
-                        frostAnswersCustom("Theme", "Count" to Theme(which).name)
+                itemsCallbackSingleChoice(item.pref) { _, _, which, _ ->
+                    if (item.pref == which) return@itemsCallbackSingleChoice true
+                    if (which == Theme.CUSTOM.ordinal && !IS_FROST_PRO) {
+                        purchasePro()
+                        return@itemsCallbackSingleChoice true
                     }
+                    item.pref = which
+                    shouldRestartMain()
+                    reload()
+                    setFrostTheme(true)
+                    themeExterior()
+                    invalidateOptionsMenu()
+                    frostAnswersCustom("Theme", "Count" to Theme(which).name)
                     true
                 }
             }
@@ -117,22 +114,23 @@ fun SettingsActivity.getAppearancePrefs(): KPrefAdapterBuilder.() -> Unit = {
         allowCustomAlpha = false
     }
 
+    subItems(R.string.night_theme, getNightThemePrefs()) {
+        descRes = R.string.night_theme_desc
+    }
+
     header(R.string.global_customization)
 
     text(R.string.main_activity_layout, { Prefs.mainActivityLayoutType }, { Prefs.mainActivityLayoutType = it }) {
         textGetter = { string(Prefs.mainActivityLayout.titleRes) }
-        onClick = {
-            _, _, item ->
+        onClick = { _, _, item ->
             materialDialogThemed {
                 title(R.string.set_main_activity_layout)
                 items(MainActivityLayout.values.map { string(it.titleRes) })
-                itemsCallbackSingleChoice(item.pref) {
-                    _, _, which, _ ->
-                    if (item.pref != which) {
-                        item.pref = which
-                        shouldRestartMain()
-                        frostAnswersCustom("Main Layout", "Type" to MainActivityLayout(which).name)
-                    }
+                itemsCallbackSingleChoice(item.pref) { _, _, which, _ ->
+                    if (item.pref == which) return@itemsCallbackSingleChoice true
+                    item.pref = which
+                    shouldRestartMain()
+                    frostAnswersCustom("Main Layout", "Type" to MainActivityLayout(which).name)
                     true
                 }
             }
