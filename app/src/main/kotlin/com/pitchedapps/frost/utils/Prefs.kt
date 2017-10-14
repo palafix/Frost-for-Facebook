@@ -52,9 +52,9 @@ object Prefs : KPref() {
 
     var enableNightTheme: Boolean by kpref("enable_night_theme", false)
 
-    var nightThemeStart: Int by kpref("night_theme_start", 800)
+    var nightThemeStart: Int by kpref("night_theme_start", 2000)
 
-    var nightThemeEnd: Int by kpref("night_theme_end", 2000)
+    var nightThemeEnd: Int by kpref("night_theme_end", 800)
 
     val themeLoader = lazyResettable { Theme(if (shouldUseNightTheme) nightTheme else theme) }
 

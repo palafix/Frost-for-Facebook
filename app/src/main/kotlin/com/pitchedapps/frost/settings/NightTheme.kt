@@ -16,19 +16,33 @@ import com.pitchedapps.frost.utils.setFrostTheme
  */
 fun SettingsActivity.getNightThemePrefs(): KPrefAdapterBuilder.() -> Unit = {
 
-    checkbox(R.string.enable_night_theme, { Prefs.enableNightTheme }, { Prefs.enableNightTheme = it }) {
-        descRes = R.string.enable_night_theme_desc
-    }
-
     fun KPrefItemBase.BaseContract<*>.dependsOnNight() {
         enabler = { Prefs.enableNightTheme }
     }
 
-    timePicker(R.string.night_theme_start, { Prefs.nightThemeStart }, { Prefs.nightThemeStart = it }) {
+    fun reloadThemeImpl() {
+        Prefs.themeLoader.invalidate()
+        shouldRestartMain()
+        reload()
+        setFrostTheme(true)
+        themeExterior()
+        invalidateOptionsMenu()
+    }
+
+    fun reloadTheme() {
+        if (Prefs.updateTheme)
+            reloadThemeImpl()
+    }
+
+    checkbox(R.string.enable_night_theme, { Prefs.enableNightTheme }, { Prefs.enableNightTheme = it; reload(1, 2, 3); reloadTheme() }) {
+        descRes = R.string.enable_night_theme_desc
+    }
+
+    timePicker(R.string.night_theme_start, { Prefs.nightThemeStart }, { Prefs.nightThemeStart = it; reloadTheme() }) {
         dependsOnNight()
     }
 
-    timePicker(R.string.night_theme_end, { Prefs.nightThemeEnd }, { Prefs.nightThemeEnd = it }) {
+    timePicker(R.string.night_theme_end, { Prefs.nightThemeEnd }, { Prefs.nightThemeEnd = it; reloadTheme() }) {
         dependsOnNight()
     }
 
@@ -43,11 +57,7 @@ fun SettingsActivity.getNightThemePrefs(): KPrefAdapterBuilder.() -> Unit = {
                     val index = themes[which].ordinal
                     if (item.pref == index) return@itemsCallbackSingleChoice true
                     item.pref = index
-                    shouldRestartMain()
-                    reload()
-                    setFrostTheme(true)
-                    themeExterior()
-                    invalidateOptionsMenu()
+                    reloadThemeImpl()
                     frostAnswersCustom("NightTheme", "Count" to Theme(index).name)
                     true
                 }
