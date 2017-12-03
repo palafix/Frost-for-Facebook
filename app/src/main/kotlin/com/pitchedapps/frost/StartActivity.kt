@@ -20,8 +20,8 @@ class StartActivity : KauBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        launchNewTask(TabCustomizerActivity::class.java)
-        return
+       // launchNewTask(TabCustomizerActivity::class.java)
+       //  return
         FbCookie.switchBackUser {
             loadFbCookiesAsync { cookies ->
                 L.d("Cookies loaded at time ${System.currentTimeMillis()}", cookies.toString())
